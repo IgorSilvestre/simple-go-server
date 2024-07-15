@@ -6,7 +6,6 @@ import (
     "log"
     "github.com/gorilla/mux"
     "github.com/likexian/whois"
-    "github.com/rs/cors"
 )
 
 // CORS Middleware
