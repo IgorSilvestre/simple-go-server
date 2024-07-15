@@ -33,22 +33,10 @@ func whoisHandler(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte(result))
 }
 
-func whoisDebugHandler(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    domain := vars["domain"]
-
-    // Log the received domain
-    log.Printf("Received request for domain: %s", domain)
-
-    // Mock response for testing
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Whois data for " + domain))
-}
-
 func main () {
     r := mux.NewRouter()
     
-    r.HandleFunc("/whois/{domain}", whoisDebugHandler).Methods("GET")
+    r.HandleFunc("/whois/{domain}", whoisHandler).Methods("GET")
 
     r.HandleFunc("/", handler)
 
