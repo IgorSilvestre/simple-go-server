@@ -5,7 +5,7 @@ import (
     "log"
     "net/http"
     "github.com/gorilla/mux"
-    "github.com/likexian/whois"
+    "github.com/igorsilvestre/simple-go-server/pkg/external"
 )
 
 // CORS Middleware
@@ -28,32 +28,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Hello World!")
 }
 
-func whoisHandler(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    domain := vars["domain"]
-    if domain == "" {
-        http.Error(w, "Domain parameter is required", http.StatusBadRequest)
-        return
-    }
-
-    // Perform the WHOIS lookup
-    result, err := whois.Whois(domain)
-    if err != nil {
-        http.Error(w, fmt.Sprintf("Error fetching WHOIS data: %v", err), http.StatusInternalServerError)
-        return
-    }
-
-    // Write the result to the response
-    w.Header().Set("Content-Type", "text/plain")
-    _, writeErr := w.Write([]byte(result))
-    if writeErr != nil {
-        log.Printf("Error writing response: %v", writeErr)
-    }
-}
-
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/whois/{domain}", whoisHandler).Methods("GET", "OPTIONS")
+
+    // Register external routes
+    external.RegisterExternalRoutes(r)
+
+    // Main routes
     r.HandleFunc("/", handler).Methods("GET", "OPTIONS")
 
     // Apply the CORS middleware
