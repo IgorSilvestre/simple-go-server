@@ -7,4 +7,7 @@ require (
 	github.com/likexian/whois v1.15.3
 )
 
-require golang.org/x/net v0.27.0 // indirect
+require (
+	github.com/google/uuid v1.6.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
+)
