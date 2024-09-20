@@ -48,6 +48,7 @@ func getAutocompleteSuggestions(input, sessionToken string) (*AutocompleteRespon
     params.Add("input", input)
     params.Add("key", apiKey)
     params.Add("sessiontoken", sessionToken)
+    params.Add("language", "pt-BR")
 
     apiURL := endpoint + "?" + params.Encode()
 
