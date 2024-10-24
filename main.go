@@ -6,6 +6,7 @@ import (
 	"github.com/igorsilvestre/simple-go-server/pkg/external"
 	"log"
 	"net/http"
+	"os"
 
   "github.com/joho/godotenv"
 )
@@ -31,10 +32,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-
+  if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("Error loading .env file")
+		}
 	}
+
 	r := mux.NewRouter()
 
 	// Register external routes
