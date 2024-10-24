@@ -1,47 +1,53 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "net/http"
-    "github.com/gorilla/mux"
-    "github.com/igorsilvestre/simple-go-server/pkg/external"
+	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/igorsilvestre/simple-go-server/pkg/external"
+	"log"
+	"net/http"
+
+  "github.com/joho/godotenv"
 )
 
 // CORS Middleware
 func corsMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "*")
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
 
-        if r.Method == "OPTIONS" {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
-        next.ServeHTTP(w, r)
-    })
+		next.ServeHTTP(w, r)
+	})
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello World!")
+	fmt.Fprintf(w, "Hello World!")
 }
 
 func main() {
-    r := mux.NewRouter()
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
 
-    // Register external routes
-    external.RegisterExternalRoutes(r)
+	}
+	r := mux.NewRouter()
 
-    // Main routes
-    r.HandleFunc("/", handler).Methods("GET", "OPTIONS")
+	// Register external routes
+	external.RegisterExternalRoutes(r)
 
-    // Apply the CORS middleware
-    r.Use(corsMiddleware)
+	// Main routes
+	r.HandleFunc("/", handler).Methods("GET", "OPTIONS")
 
-    log.Println("Starting server on port 8080")
-    if err := http.ListenAndServe(":8080", r); err != nil {
-        log.Fatalf("Failed to start server: %v", err)
-    }
+	// Apply the CORS middleware
+	r.Use(corsMiddleware)
+
+	log.Println("Starting server on port 8080")
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
