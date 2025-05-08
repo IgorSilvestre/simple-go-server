@@ -1,0 +1,46 @@
+### WHOIS Domain Lookup
+# Retrieves WHOIS information for a specified domain
+GET http://localhost:8080/external/whois/example.com
+Accept: application/json
+
+### Address Autocomplete
+# Provides address suggestions based on a partial input
+GET http://localhost:8080/external/autocomplete-address?q=Av Paulista&sessiontoken=123e4567-e89b-12d3-a456-426614174000
+Accept: application/json
+
+### Google Geocoding
+# Converts an address into geographic coordinates using Google's API
+GET http://localhost:8080/external/geocode?address=1600 Amphitheatre Parkway, Mountain View, CA
+Accept: application/json
+
+### Geoapify Geocoding
+# Converts an address into geographic coordinates using Geoapify's API
+GET http://localhost:8080/external/geocode-geoapify?address=Servidão Garcia Esporte e Lazer 370
+Accept: application/json
+
+### Nominatim Geocoding
+# Converts an address into geographic coordinates using Nominatim's API
+GET http://localhost:8080/external/geocode-nominatim?address=Servidão Garcia Esporte e Lazer 370
+Accept: application/json
+
+### Direct Nominatim API
+# Direct access to Nominatim's API (for testing purposes)
+GET https://nominatim.openstreetmap.org/search?q=servidão garcia esporte e lazer 370&format=json
+Accept: application/json
+
+### health check
+# Converts an address into geographic coordinates using Geoapify's API
+GET http://localhost:8080/
+Accept: application/json
+
+### Send Email
+# Sends an email with the provided details
+POST http://localhost:8080/external/send-email
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "recipient@example.com",
+  "subject": "Test Email",
+  "body": "This is a test email sent from the API"
+}
