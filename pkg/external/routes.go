@@ -11,5 +11,6 @@ func RegisterExternalRoutes(r *mux.Router) {
 	subrouter.HandleFunc("/geocode", googleGeocodingHandler).Methods("GET", "OPTIONS")
 	subrouter.HandleFunc("/geocode-geoapify", GeoapifyGeocodingHandler).Methods("GET", "OPTIONS")
 	subrouter.HandleFunc("/geocode-nominatim", NominatimGeocodingHandler).Methods("GET", "OPTIONS")
+	subrouter.HandleFunc("/geocode-maptiler", MapTilerGeocodingHandler).Methods("GET", "OPTIONS")
 	subrouter.HandleFunc("/send-email", SendEmailHandler).Methods("POST", "OPTIONS")
 }

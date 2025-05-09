@@ -1,3 +1,8 @@
+### health check
+# Converts an address into geographic coordinates using Geoapify's API
+GET http://localhost:8080/
+Accept: application/json
+
 ### WHOIS Domain Lookup
 # Retrieves WHOIS information for a specified domain
 GET http://localhost:8080/external/whois/example.com
@@ -23,14 +28,14 @@ Accept: application/json
 GET http://localhost:8080/external/geocode-nominatim?address=Servidão Garcia Esporte e Lazer 370
 Accept: application/json
 
+### MapTiler Geocoding
+# Converts an address into geographic coordinates using MapTiler's API
+GET http://localhost:8080/external/geocode-maptiler?address=rua rui barbosa 327
+Accept: application/geo+json
+
 ### Direct Nominatim API
 # Direct access to Nominatim's API (for testing purposes)
 GET https://nominatim.openstreetmap.org/search?q=servidão garcia esporte e lazer 370&format=json
-Accept: application/json
-
-### health check
-# Converts an address into geographic coordinates using Geoapify's API
-GET http://localhost:8080/
 Accept: application/json
 
 ### Send Email
