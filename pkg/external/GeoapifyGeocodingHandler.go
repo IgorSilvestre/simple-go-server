@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // GeoapifyResponse represents the top-level response from Geoapify Geocoding API
@@ -125,6 +126,18 @@ func GeoapifyGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a cache key based on the address
+	cacheKey := "geoapify_geocoding:" + address
+
+	// Check if the data is in the cache
+	if cachedData, found := GlobalCache.Get(cacheKey); found {
+		// Use the cached data
+		data := cachedData.(*GeoapifyResponse)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
+		return
+	}
+
 	// Fetch geocoding data
 	data, err := fetchGeocodingData(address)
 
@@ -147,6 +160,9 @@ func GeoapifyGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	// Store the data in the cache (1000 hours expiration)
+	GlobalCache.Set(cacheKey, data, 1000*time.Hour)
 
 	// Write the successful response in JSON format
 	json.NewEncoder(w).Encode(data)

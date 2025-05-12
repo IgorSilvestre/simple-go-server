@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // NominatimGeocodingResult represents a single result from the Nominatim API
@@ -35,12 +36,27 @@ func NominatimGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a cache key based on the address
+	cacheKey := "nominatim_geocoding:" + address
+
+	// Check if the data is in the cache
+	if cachedData, found := GlobalCache.Get(cacheKey); found {
+		// Use the cached data
+		results := cachedData.([]NominatimGeocodingResult)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(results)
+		return
+	}
+
 	// Fetch geocoding data from Nominatim
 	results, err := fetchNominatimGeocodingData(address)
 	if err != nil {
 		http.Error(w, "Error fetching geocoding data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Store the data in the cache (24 hours expiration)
+	GlobalCache.Set(cacheKey, results, 24*time.Hour)
 
 	// Set response content type and return the results
 	w.Header().Set("Content-Type", "application/json")

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // MapTilerResponse represents the top-level response from MapTiler Geocoding API
@@ -124,6 +125,18 @@ func MapTilerGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a cache key based on the address
+	cacheKey := "maptiler_geocoding:" + address
+
+	// Check if the data is in the cache
+	if cachedData, found := GlobalCache.Get(cacheKey); found {
+		// Use the cached data
+		data := cachedData.(*MapTilerResponse)
+		w.Header().Set("Content-Type", "application/geo+json")
+		json.NewEncoder(w).Encode(data)
+		return
+	}
+
 	// Fetch geocoding data
 	data, err := fetchMapTilerGeocodingData(address)
 
@@ -155,6 +168,9 @@ func MapTilerGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 	if data.Type == "" {
 		data.Type = "FeatureCollection"
 	}
+
+	// Store the data in the cache (24 hours expiration)
+	GlobalCache.Set(cacheKey, data, 24*time.Hour)
 
 	// Write the successful response in GeoJSON format
 	json.NewEncoder(w).Encode(data)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // GeocodingResponse represents the response structure from the Google Geocoding API
@@ -58,11 +59,26 @@ func googleGeocodingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a cache key based on the address
+	cacheKey := "google_geocoding:" + address
+
+	// Check if the data is in the cache
+	if cachedData, found := GlobalCache.Get(cacheKey); found {
+		// Use the cached data
+		geocodingData := cachedData.(*GeocodingResponse)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(geocodingData)
+		return
+	}
+
 	geocodingData, err := getGeocodingData(address)
 	if err != nil {
 		http.Error(w, "Error fetching geocoding data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Store the data in the cache (24 hours expiration)
+	GlobalCache.Set(cacheKey, geocodingData, 24*time.Hour)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(geocodingData)
