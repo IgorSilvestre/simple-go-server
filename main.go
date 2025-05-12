@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-  "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 // CORS Middleware
@@ -27,12 +27,20 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// Logging Middleware
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Request: %s %s %s", r.RemoteAddr, r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!")
 }
 
 func main() {
-  if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
 		err := godotenv.Load()
 		if err != nil {
 			log.Println("Error loading .env file")
@@ -47,7 +55,8 @@ func main() {
 	// Main routes
 	r.HandleFunc("/", handler).Methods("GET", "OPTIONS")
 
-	// Apply the CORS middleware
+	// Apply middlewares
+	r.Use(loggingMiddleware)
 	r.Use(corsMiddleware)
 
 	log.Println("Starting server on port 8080")
